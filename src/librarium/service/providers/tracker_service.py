@@ -17,13 +17,16 @@ import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Optional
+from urllib.parse import urlparse
 
 import websocket  # from websocket-client
 
 from librarium.config.book_metadata import BookMetadata
 
 
-CDP_ENDPOINT = "http://localhost:9222/json"
+CDP_PORT = 9222
+CDP_ENDPOINT = f"http://localhost:{CDP_PORT}/json"
+_LOCAL_WS_HOSTS = {"localhost", "127.0.0.1", "::1"}
 CDP_TIMEOUT = 5.0
 CDP_ERROR_LOG_INTERVAL = 30.0
 WS_ERROR_LOG_INTERVAL = 30.0
@@ -114,17 +117,34 @@ def _find_pdf_viewer(shell: dict, targets: list[dict]) -> Optional[dict]:
     return None
 
 
+def _is_local_cdp_ws(url: str) -> bool:
+    """Only talk to the local CDP endpoint, never to a URL supplied by
+    whatever happens to answer on the port."""
+    try:
+        p = urlparse(url)
+        return (
+            p.scheme == "ws"
+            and p.hostname in _LOCAL_WS_HOSTS
+            and p.port == CDP_PORT
+        )
+    except ValueError:
+        return False
+
+
 def _evaluate(tab: dict, error_sink: list[str]) -> Optional[dict]:
     ws_url = tab.get("webSocketDebuggerUrl")
     if not ws_url:
         error_sink.append("target has no webSocketDebuggerUrl")
+        return None
+    if not _is_local_cdp_ws(ws_url):
+        error_sink.append(f"refusing non-local websocket URL: {ws_url!r}")
         return None
 
     try:
         ws = websocket.create_connection(
             ws_url,
             timeout=CDP_TIMEOUT,
-            origin="http://localhost:9222",
+            origin=f"http://localhost:{CDP_PORT}",
             suppress_origin=False,
         )
     except Exception as e:
