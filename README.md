@@ -6,8 +6,6 @@
 [![Platform: Linux](https://img.shields.io/badge/platform-Linux-FCC624?logo=linux&logoColor=black)](#install)
 [![Chromium via CDP](https://img.shields.io/badge/Chromium-CDP-4285F4?logo=googlechrome&logoColor=white)](https://chromedevtools.github.io/devtools-protocol/)
 [![Discord Rich Presence](https://img.shields.io/badge/Discord-Rich%20Presence-5865F2?logo=discord&logoColor=white)](https://discord.com/developers/docs/rich-presence/overview)
-[![Last commit](https://img.shields.io/github/last-commit/Hashiruta/Librarium)](https://github.com/Hashiruta/Librarium/commits)
-[![Stars](https://img.shields.io/github/stars/Hashiruta/Librarium?style=flat)](https://github.com/Hashiruta/Librarium/stargazers)
 
 A Discord Rich Presence integration that shows what PDF you're reading in a Chromium-based browser, in real time. Built as a technical experiment around the Chrome DevTools Protocol (CDP) and the browser's built-in PDF viewer.
 
