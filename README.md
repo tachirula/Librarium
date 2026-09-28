@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="NjQwLnBuZw%20%281%29.png" alt="Librarium banner" width="420">
+  <img src="docs/banner.png" alt="Librarium banner" width="420">
 </p>
 
 # Librarium
@@ -47,7 +47,7 @@ The other design problem is the CDP flag. Chromium refuses WebSocket connections
 ## Install
 
 ```bash
-git clone https://github.com/Hashiruta/Librarium.git
+git clone https://github.com/tachirula/Librarium.git
 cd Librarium
 python3 -m venv venv
 source venv/bin/activate
