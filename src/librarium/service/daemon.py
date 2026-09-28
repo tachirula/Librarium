@@ -16,7 +16,7 @@ import socket
 import traceback
 
 from librarium.cli.parser import socket_path
-from librarium.service.app_controller import AppController
+from librarium.service.app_controller import DEFAULT_DETAILS, AppController
 from librarium.service.providers import browser_patcher
 
 
@@ -35,9 +35,22 @@ class LibrariumDaemon:
             self.sock_path.unlink()
         except FileNotFoundError:
             pass
+        except PermissionError as e:
+            raise RuntimeError(
+                f"cannot replace existing socket {self.sock_path}: {e}"
+            ) from e
+
         self.server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self.server.bind(str(self.sock_path))
+
+        # Create the socket already restricted to the owner: no window
+        # between bind() and chmod() where it has wider permissions.
+        old_umask = os.umask(0o177)
+        try:
+            self.server.bind(str(self.sock_path))
+        finally:
+            os.umask(old_umask)
         os.chmod(self.sock_path, 0o600)
+
         self.server.listen(8)
         self.server.setblocking(False)
 
@@ -82,14 +95,23 @@ class LibrariumDaemon:
         if cmd == "status":
             return "running"
         if cmd == "state":
-            self.app.update_presence(details="Librarium v0.1.0", state=arg or "Idle")
+            self.app.set_manual_presence(
+                details=DEFAULT_DETAILS,
+                state=arg or "Idle",
+            )
             return f"state -> {arg or 'Idle'}"
         if cmd == "details":
-            self.app.update_presence(details=arg or "Librarium v0.1.0", state="Idle")
-            return f"details -> {arg or 'Librarium v0.1.0'}"
+            self.app.set_manual_presence(
+                details=arg or DEFAULT_DETAILS,
+                state="Idle",
+            )
+            return f"details -> {arg or DEFAULT_DETAILS}"
         if cmd in ("quit", "stop"):
             self.running = False
-            return "stopping"
+            return (
+                "stopping (a browser that is already open keeps its debug "
+                "port until you fully quit it)"
+            )
         return f"unknown command: {cmd}"
 
     # ---------------------- main loop ----------------------
@@ -97,7 +119,15 @@ class LibrariumDaemon:
     def run(self):
         print("Starting Librarium daemon...", flush=True)
 
-        # Patch browser before anything else
+        # Make sure we always restore, even on uncaught exceptions
+        atexit.register(self.stop)
+        self._install_signal_handlers()
+
+        # Socket first: `libra status` must see a live daemon before the
+        # browser is patched, otherwise the stale-patch cleanup could
+        # remove the patch while we are starting up.
+        self._setup_socket()
+
         patched = browser_patcher.setup()
         if patched:
             print(f"[daemon] browser patched: {', '.join(patched)}", flush=True)
@@ -105,11 +135,6 @@ class LibrariumDaemon:
         else:
             print("[daemon] no supported browser found to patch.", flush=True)
 
-        # Make sure we always restore, even on uncaught exceptions
-        atexit.register(self.stop)
-        self._install_signal_handlers()
-
-        self._setup_socket()
         self.app.start()
         print(f"Listening on {self.sock_path}.", flush=True)
 
@@ -166,3 +191,8 @@ class LibrariumDaemon:
         removed = browser_patcher.restore()
         if removed:
             print(f"[daemon] browser restored: {', '.join(removed)}", flush=True)
+            print(
+                "[daemon] note: a browser that is already running keeps its "
+                "debug port open until it is fully quit.",
+                flush=True,
+            )
