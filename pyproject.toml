@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "librarium"
+version = "0.1.0"
+description = "Discord Rich Presence tracker for local PDF reading in Chromium browsers"
+readme = "README.md"
+authors = [
+    { name = "Hashiruta", email = "hashiruta@proton.me" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "pypresence>=4.3.0",
+    "websocket-client>=1.7.0",
+]
+license = { text = "GPL-3.0-only" }
+
+[project.scripts]
+libra = "librarium.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["librarium*"]
+
+[tool.setuptools]
+license-files = ["LICENSE"]
