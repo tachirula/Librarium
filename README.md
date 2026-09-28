@@ -13,7 +13,7 @@
 [![Last commit](https://img.shields.io/github/last-commit/tachirula/Librarium)](https://github.com/tachirula/Librarium/commits)
 [![Stars](https://img.shields.io/github/stars/tachirula/Librarium?style=flat)](https://github.com/tachirula/Librarium/stargazers)
 
-A Discord Rich Presence integration that shows what PDF you're reading in a Chromium-based browser, in real time. Built as a technical experiment around the Chrome DevTools Protocol (CDP) and the browser's built-in PDF viewer.
+A Discord Rich Presence integration that shows what local PDF you're reading in a Chromium-based browser, in real time. Built as a technical experiment around the Chrome DevTools Protocol (CDP) and the browser's built-in PDF viewer.
 
 > **Status: experimental.** This is a working technical demo, not a polished product. It only supports Chromium browsers (Brave, Chrome, Chromium, Edge, Opera) on Linux with XDG-compliant desktops. It is published as a reference for the CDP technique and the daemon/patch architecture, not as an end-user application.
 
