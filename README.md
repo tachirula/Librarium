@@ -56,6 +56,10 @@ pip install -e .
 
 ## Use
 
+Fully quit your browser once after the first `libra start`, so it picks
+up the CDP flag. Reopen it from the menu (not the terminal), then open
+any local PDF.
+
 ```bash
 libra start           # spawn the daemon in the background
 libra status          # check whether it's running
