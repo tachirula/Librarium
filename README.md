@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="NjQwLnBuZw%20%281%29.png" alt="Librarium banner" width="420">
+</p>
+
 # Librarium
 
 [![Status: experimental](https://img.shields.io/badge/status-experimental-orange)](#librarium)
