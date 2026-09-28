@@ -1,6 +1,5 @@
 # Librarium
 
-[![License: GPL-3.0](https://img.shields.io/github/license/Hashiruta/Librarium?color=blue)](LICENSE)
 [![Status: experimental](https://img.shields.io/badge/status-experimental-orange)](#librarium)
 [![Python 3](https://img.shields.io/badge/python-3-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Platform: Linux](https://img.shields.io/badge/platform-Linux-FCC624?logo=linux&logoColor=black)](#install)
